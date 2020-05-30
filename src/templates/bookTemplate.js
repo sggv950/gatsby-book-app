@@ -7,14 +7,14 @@ const BookTemplate = props => {
   console.log(props)
   const { title, author, summary, localImage } = props.data.book
   return (
-    <Layout>
+    <section>
       <BookItem
         bookCover={localImage.childImageSharp.fixed}
         authorName={author.name}
         bookTitle={title}
         bookSummary={summary}
       />
-    </Layout>
+    </section>
   )
 }
 
