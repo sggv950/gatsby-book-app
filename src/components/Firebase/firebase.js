@@ -1,9 +1,9 @@
 import firebaseConfig from "./config";
-import axios from 'axios';
+import axios from "axios";
 
 class Firebase {
   constructor(app) {
-    if(!firebaseInstance) {
+    if (!firebaseInstance) {
       app.initializeApp(firebaseConfig);
 
       this.auth = app.auth();
@@ -13,11 +13,21 @@ class Firebase {
     }
   }
 
-  async register({email, password}){
-    return this.auth.createUserWithEmailAndPassword(email, password);
+  async getUserProfile({ userId }) {
+    return this.db
+      .collection("publicProfiles")
+      .where("userId", "==", userId)
+      .get();
   }
 
-  async login({email, password}) {
+  async register({ email, password, username }) {
+    const newUser = await this.auth.createUserWithEmailAndPassword(email, password);
+    return this.db.collection('publicProfiles').doc(username).set({
+      userId: newUser.user.uid
+    })
+  }
+
+  async login({ email, password }) {
     return this.auth.signInWithEmailAndPassword(email, password);
   }
 
@@ -29,12 +39,12 @@ class Firebase {
 let firebaseInstance;
 
 function getFirebaseInstance(app) {
-  if(!firebaseInstance && app){
+  if (!firebaseInstance && app) {
     firebaseInstance = new Firebase(app);
     return firebaseInstance;
-  }else if(firebaseInstance){
-    return firebaseInstance
-  }else{
+  } else if (firebaseInstance) {
+    return firebaseInstance;
+  } else {
     return null;
   }
 }

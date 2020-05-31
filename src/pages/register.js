@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { FirebaseContext } from "../components/Firebase";
-import { Form, Input, Button } from "../components/common";
+import { Form, Input, Button, ErrorMessage } from "../components/common";
 
 const Register = () => {
   const { firebase } = useContext(FirebaseContext);
@@ -8,10 +8,13 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    username: "",
   });
+  const [errormessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     e.persist();
+    setErrorMessage("");
     setFormValues((currentValues) => ({
       ...currentValues,
       [e.target.name]: e.target.value,
@@ -22,17 +25,30 @@ const Register = () => {
     e.preventDefault();
 
     if (formValues.password === formValues.confirmPassword) {
-      firebase.register({
-        email: formValues.email,
-        password: formValues.password,
-      });
+      firebase
+        .register({
+          username: formValues.username,
+          email: formValues.email,
+          password: formValues.password,
+        })
+        .catch((err) => {
+          setErrorMessage(err.message);
+        });
+    } else {
+      setErrorMessage("Password & confirm password fields must match!");
     }
-
-    console.log(formValues);
   };
 
   return (
     <Form onSubmit={handleSubmit}>
+      <Input
+        onChange={handleInputChange}
+        placeholder="username"
+        type="text"
+        name="username"
+        value={formValues.username}
+        required
+      ></Input>
       <Input
         onChange={handleInputChange}
         placeholder="email"
@@ -48,7 +64,7 @@ const Register = () => {
         name="password"
         value={formValues.password}
         required
-        minLength={3}
+        minLength={6}
       ></Input>
       <Input
         onChange={handleInputChange}
@@ -57,8 +73,9 @@ const Register = () => {
         name="confirmPassword"
         value={formValues.confirmPassword}
         required
-        minLength={3}
+        minLength={6}
       ></Input>
+      {!!errormessage && <ErrorMessage>{errormessage}</ErrorMessage>}
       <Button type="submit" block>
         Register
       </Button>

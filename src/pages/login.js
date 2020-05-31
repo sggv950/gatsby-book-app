@@ -1,12 +1,13 @@
 import React, { useState, useContext } from "react";
 import { navigate } from "gatsby";
 import { FirebaseContext } from "../components/Firebase";
-import { Form, Input, Button } from "../components/common";
+import { Form, Input, Button, ErrorMessage } from "../components/common";
 import SEO from "../components/seo";
 
 const Login = () => {
   const [formValues, setFormValues] = useState({ email: "", password: "" });
   const { firebase } = useContext(FirebaseContext);
+  const [errormessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,12 +15,14 @@ const Login = () => {
     firebase
       .login({ email, password })
       .then(() => navigate("/"))
-      .catch(() => alert("user name or password are incorrect"));
+      .catch((err) => {
+        setErrorMessage(err.message);
+      });
   };
 
   const handleInputChange = (e) => {
     e.persist();
-
+    setErrorMessage("");
     setFormValues((currentValues) => ({
       ...currentValues,
       [e.target.name]: e.target.value,
@@ -35,6 +38,7 @@ const Login = () => {
           onChange={handleInputChange}
           type="email"
           placeholder="email"
+          required
         />
         <Input
           value={formValues.password}
@@ -42,8 +46,12 @@ const Login = () => {
           onChange={handleInputChange}
           type="password"
           placeholder="password"
+          required
         />
-        <Button type="submit" block>Login</Button>
+        {!!errormessage && <ErrorMessage>{errormessage}</ErrorMessage>}
+        <Button type="submit" block>
+          Login
+        </Button>
       </Form>
     </section>
   );
