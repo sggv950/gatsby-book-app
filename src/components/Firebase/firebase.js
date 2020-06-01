@@ -21,10 +21,24 @@ class Firebase {
   }
 
   async register({ email, password, username }) {
-    const newUser = await this.auth.createUserWithEmailAndPassword(email, password);
-    return this.db.collection('publicProfiles').doc(username).set({
-      userId: newUser.user.uid
-    })
+    const newUser = await this.auth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
+    return this.db
+      .collection("publicProfiles")
+      .doc(username)
+      .set({
+        userId: newUser.user.uid,
+      });
+  }
+
+  subscribeToBookComments({ bookId, onSnapshot }) {
+    const bookRef = this.db.collection("books").doc(bookId);
+    return this.db
+      .collection("comments")
+      .where("book", "==", bookRef)
+      .onSnapshot(onSnapshot);
   }
 
   async login({ email, password }) {

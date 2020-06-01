@@ -1,11 +1,13 @@
-import React from "react"
-import Layout from "../components/layout"
-import BookItem from "../components/BookItem"
-import { graphql } from "gatsby"
+import React, { useContext } from "react";
+import Layout from "../components/layout";
+import BookItem from "../components/BookItem";
+import { BookComments } from "../components/common/BookComments";
+import { graphql } from "gatsby";
+import { FirebaseContext } from "../components/Firebase";
 
-const BookTemplate = props => {
-  console.log(props)
-  const { title, author, summary, localImage } = props.data.book
+const BookTemplate = (props) => {
+  const { firebase } = useContext(FirebaseContext);
+  const { title, author, summary, localImage, id } = props.data.book;
   return (
     <section>
       <BookItem
@@ -14,9 +16,10 @@ const BookTemplate = props => {
         bookTitle={title}
         bookSummary={summary}
       />
+      {!!firebase && <BookComments bookId={id} firebase={firebase} />}
     </section>
-  )
-}
+  );
+};
 
 export const query = graphql`
   query BookQuery($bookId: String!) {
@@ -36,6 +39,6 @@ export const query = graphql`
       }
     }
   }
-`
+`;
 
-export default BookTemplate
+export default BookTemplate;
