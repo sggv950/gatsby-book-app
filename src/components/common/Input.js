@@ -8,7 +8,7 @@ export const Input = styled.input`
     margin-bottom: 8px;
     border-radius: 5px;
     border: 1px solid #ddd;
-    box-shadow: none;
+    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.6);
 
     &:focus, &:active {
         border: 1px solid rebeccapurple;
